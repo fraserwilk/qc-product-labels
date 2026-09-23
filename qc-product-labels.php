@@ -47,7 +47,7 @@ function qc_labels_page() {
     <div class="wrap">
         <h1>Product Labels</h1>
         <p>Select products and click <strong>Print Labels</strong>. One label is printed per unit in stock.<br>
-           <em>Printer: Brother QL-1100 · DK-22205 continuous labels · Use Chrome's print dialog, Paper size <strong>62 &times; 75 mm</strong>, Margins: None, Scale: 100%.</em></p>
+           <em>Printer: Brother QL-1100 · DK-22205 continuous labels · Use <strong>Firefox</strong> to print, Paper size <strong>62 &times; 75 mm</strong>, Margins: None, Scale: 100%.</em></p>
 
         <form method="get" action="">
             <input type="hidden" name="page" value="qc-product-labels">
@@ -159,7 +159,7 @@ function qc_labels_print($all_products, $print_ids) {
              * Each label is 62mm wide × 75mm long — a natural portrait page,
              * no rotation needed.
              *
-             * HOW TO PRINT (macOS system print dialog):
+             * HOW TO PRINT (use Firefox — Chrome silently drops jobs to QL-1100):
              * 1. Destination: "Brother QL-1100"
              * 2. Paper size: 62 × 75 mm. Create once if missing:
              *    System Settings → Printers & Scanners → QL-1100 → open any
@@ -335,7 +335,7 @@ function qc_labels_print($all_products, $print_ids) {
             🖨 Print <?= count($to_print) ?> Label<?= count($to_print) !== 1 ? 's' : '' ?> → QL-1100
         </button>
         <p class="print-hint">Paper size: <strong>62&nbsp;&times;&nbsp;75&nbsp;mm</strong> · Margins: <strong>None</strong> · Scale: <strong>100%</strong><br>
-        <small>If no 62&nbsp;&times;&nbsp;75&nbsp;mm size appears, create one in macOS System Settings &rarr; Printers &amp; Scanners &rarr; QL-1100 &rarr; open print dialog &rarr; Paper Size &rarr; Manage Custom Sizes (width 62&nbsp;mm, height 75&nbsp;mm, all margins 0).</small></p>
+        <small>Use <strong>Firefox</strong> — Chrome does not reliably send jobs to the QL-1100 with custom paper sizes. If no 62&nbsp;&times;&nbsp;75&nbsp;mm size appears, create one in macOS System Settings &rarr; Printers &amp; Scanners &rarr; QL-1100 &rarr; open print dialog &rarr; Paper Size &rarr; Manage Custom Sizes (width 62&nbsp;mm, height 75&nbsp;mm, all margins 0).</small></p>
 
         <div class="labels-wrap">
         <?php foreach ($to_print as $i => $item): ?>
