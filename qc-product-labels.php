@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: QC Product Labels
- * Description: Print product labels to Brother QL-1100 on DK-11209 die-cut labels (62mm x 29mm). One label per unit in stock.
+ * Description: Print product labels to Brother QL-1100 on DK-22205 continuous labels (62mm x 75mm per label). One label per unit in stock.
  * Version: 1.6
  * Author: Quality Components
  */
@@ -47,7 +47,7 @@ function qc_labels_page() {
     <div class="wrap">
         <h1>Product Labels</h1>
         <p>Select products and click <strong>Print Labels</strong>. One label is printed per unit in stock.<br>
-           <em>Printer: Brother QL-1100 · DK-11209 die-cut labels · Use Chrome's print dialog, Paper size <strong>29 &times; 62 mm</strong> (Portrait, no Landscape toggle), Margins: None, Scale: 100%.</em></p>
+           <em>Printer: Brother QL-1100 · DK-22205 continuous labels · Use Chrome's print dialog, Paper size <strong>62 &times; 75 mm</strong>, Margins: None, Scale: 100%.</em></p>
 
         <form method="get" action="">
             <input type="hidden" name="page" value="qc-product-labels">
@@ -153,35 +153,26 @@ function qc_labels_print($all_products, $print_ids) {
             * { margin: 0; padding: 0; box-sizing: border-box; }
 
             /*
-             * Brother QL-1100 · DK-11209 die-cut label.
-             * The media is 29mm WIDE (across the print head) × 62mm LONG (feed
-             * direction). The Brother driver treats it as a PORTRAIT page,
-             * 29mm × 62mm, and prints artwork without rotating it.
+             * Brother QL-1100 · DK-22205 continuous label (62mm wide).
+             * Each label is 62mm wide × 75mm long — a natural portrait page,
+             * no rotation needed.
              *
-             * So: @page is 29mm × 62mm and each label's artwork is laid out
-             * landscape (62mm × 29mm) inside .label-inner and rotated -90deg to
-             * sit on the portrait page. You then peel the label and apply it
-             * turned 90deg, reading across the 62mm length — normal for
-             * address-style die-cut labels.
-             *
-             * HOW TO PRINT (use Chrome's own print UI, NOT "Print using system
-             * dialog", and do NOT touch a Landscape toggle):
+             * HOW TO PRINT (macOS system print dialog):
              * 1. Destination: "Brother QL-1100"
-             * 2. Paper size: a 29 × 62 mm size. If the list has none, create one:
-             *    macOS  Printers & Scanners → Brother QL-1100 → Paper Sizes →
-             *    Manage Custom Sizes → +  width 29mm, height 62mm, all margins 0.
-             *    Do NOT pick a 62 × 29 (landscape) size or a 29 × 90 / 29 × 42.
-             * 3. Layout: Portrait · Margins: None · Headers/footers: Off
-             * 4. Scale: 100% (not "Fit to printable area")
-             * 5. Print
+             * 2. Paper size: 62 × 75 mm. Create once if missing:
+             *    System Settings → Printers & Scanners → QL-1100 → open any
+             *    print dialog → Paper Size → Manage Custom Sizes → +
+             *    width 62mm, height 75mm, all margins 0.
+             * 3. Margins: None · Scale: 100%
+             * 4. Print
              */
             @page {
-                size: 29mm 62mm;
+                size: 62mm 75mm;
                 margin: 0;
             }
 
             body {
-                width: 29mm;
+                width: 62mm;
                 background: white;
                 font-family: Arial, Helvetica, sans-serif;
                 -webkit-print-color-adjust: exact;
@@ -194,14 +185,7 @@ function qc_labels_print($all_products, $print_ids) {
                     padding: 10px;
                     width: auto;
                 }
-                /* On screen, show each label un-rotated so it is legible. */
-                .label {
-                    width: 62mm !important;
-                    height: 29mm !important;
-                }
                 .label-inner {
-                    position: static !important;
-                    transform: none !important;
                     box-shadow: 0 1px 4px rgba(0,0,0,0.25);
                     border-radius: 1mm;
                 }
@@ -238,14 +222,10 @@ function qc_labels_print($all_products, $print_ids) {
                 font-family: Arial, sans-serif;
             }
 
-            /* ── Label ──
-             * .label is the physical page: 29mm × 62mm portrait, one per label.
-             * .label-inner is the artwork, laid out landscape (62mm × 29mm) and
-             * rotated -90deg onto that portrait page. */
+            /* ── Label ── one per physical page: 62mm × 75mm portrait */
             .label {
-                position: relative;
-                width: 29mm;
-                height: 62mm;
+                width: 62mm;
+                height: 75mm;
                 background: white;
                 overflow: hidden;
                 page-break-after: always;
@@ -257,65 +237,56 @@ function qc_labels_print($all_products, $print_ids) {
             }
 
             .label-inner {
-                position: absolute;
-                top: 50%;
-                left: 50%;
                 width: 62mm;
-                height: 29mm;
-                /* If a test print is upside-down, change to rotate(90deg). */
-                transform: translate(-50%, -50%) rotate(-90deg);
-                transform-origin: center center;
+                height: 75mm;
                 display: flex;
-                flex-direction: row;
+                flex-direction: column;
                 align-items: center;
-                padding: 1.5mm 2.5mm;
+                justify-content: center;
+                padding: 3mm 3.5mm;
                 gap: 1.5mm;
                 overflow: hidden;
             }
 
-            /* Product image column */
             .label-img {
                 flex-shrink: 0;
-                width: 21mm;
-                height: 21mm;
-                align-self: center;
-                overflow: hidden;
+                width: 24mm;
+                height: 24mm;
             }
             .label-img img {
-                width: 21mm;
-                height: 21mm;
+                width: 24mm;
+                height: 24mm;
                 object-fit: contain;
                 display: block;
             }
 
-            /* Text column */
             .label-info {
-                flex: 1;
-                min-width: 0;
+                width: 100%;
                 display: flex;
                 flex-direction: column;
-                justify-content: center;
-                gap: 0.3mm;
+                align-items: flex-start;
+                text-align: left;
+                gap: 0.5mm;
             }
 
             .label-brand {
-                font-size: 5pt;
+                font-size: 7pt;
                 font-weight: bold;
-                color: #888;
+                color: #444;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }
 
             .label-sku {
-                font-size: 9pt;
+                font-size: 15pt;
                 font-weight: bold;
                 color: #000;
                 line-height: 1.1;
             }
 
             .label-name {
-                font-size: 6.5pt;
-                line-height: 1.15;
+                font-size: 9pt;
+                line-height: 1.2;
                 overflow: hidden;
                 display: -webkit-box;
                 -webkit-line-clamp: 2;
@@ -324,20 +295,22 @@ function qc_labels_print($all_products, $print_ids) {
             }
 
             .label-category {
-                font-size: 6pt;
+                font-size: 8pt;
                 color: #333;
                 letter-spacing: 0.2px;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                max-width: 100%;
             }
 
             .label-component {
-                font-size: 6pt;
+                font-size: 8pt;
                 color: #444;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                max-width: 100%;
             }
         </style>
     </head>
@@ -345,8 +318,8 @@ function qc_labels_print($all_products, $print_ids) {
         <button class="print-btn" onclick="window.print()">
             🖨 Print <?= count($to_print) ?> Label<?= count($to_print) !== 1 ? 's' : '' ?> → QL-1100
         </button>
-        <p class="print-hint">Paper size: <strong>29&nbsp;&times;&nbsp;62&nbsp;mm</strong>, Portrait · Margins: <strong>None</strong> · Headers &amp; footers: <strong>Off</strong> · Scale: <strong>100%</strong><br>
-        <small>Use Chrome's print dialog (not the system dialog) and do not use a Landscape toggle. The label content prints sideways, along the 62&nbsp;mm length &mdash; that is intentional.</small></p>
+        <p class="print-hint">Paper size: <strong>62&nbsp;&times;&nbsp;75&nbsp;mm</strong> · Margins: <strong>None</strong> · Scale: <strong>100%</strong><br>
+        <small>If no 62&nbsp;&times;&nbsp;75&nbsp;mm size appears, create one in macOS System Settings &rarr; Printers &amp; Scanners &rarr; QL-1100 &rarr; open print dialog &rarr; Paper Size &rarr; Manage Custom Sizes (width 62&nbsp;mm, height 75&nbsp;mm, all margins 0).</small></p>
 
         <div class="labels-wrap">
         <?php foreach ($to_print as $i => $item): ?>
