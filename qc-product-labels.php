@@ -131,6 +131,7 @@ function qc_labels_print($all_products, $print_ids) {
         $category_path = qc_category_path($product->get_id());
         $image_id      = $product->get_image_id();
         $image_url     = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+        $stock_code    = get_post_meta($product->get_id(), '_qc_stock_code', true);
 
         for ($i = 0; $i < $stock; $i++) {
             $to_print[] = [
@@ -140,6 +141,7 @@ function qc_labels_print($all_products, $print_ids) {
                 'brand'         => $brand,
                 'category_path' => $category_path,
                 'image_url'     => $image_url,
+                'stock_code'    => $stock_code,
             ];
         }
     }
@@ -242,8 +244,8 @@ function qc_labels_print($all_products, $print_ids) {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                justify-content: center;
-                padding: 3mm 3.5mm;
+                justify-content: flex-start;
+                padding: 1.5mm 1.5mm 3mm 3.5mm;
                 gap: 1.5mm;
                 overflow: hidden;
             }
@@ -272,7 +274,7 @@ function qc_labels_print($all_products, $print_ids) {
             .label-brand {
                 font-size: 7pt;
                 font-weight: bold;
-                color: #444;
+                color: #000;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }
@@ -291,12 +293,12 @@ function qc_labels_print($all_products, $print_ids) {
                 display: -webkit-box;
                 -webkit-line-clamp: 2;
                 -webkit-box-orient: vertical;
-                color: #333;
+                color: #000;
             }
 
             .label-category {
                 font-size: 8pt;
-                color: #333;
+                color: #000;
                 letter-spacing: 0.2px;
                 white-space: nowrap;
                 overflow: hidden;
@@ -306,11 +308,25 @@ function qc_labels_print($all_products, $print_ids) {
 
             .label-component {
                 font-size: 8pt;
-                color: #444;
+                color: #000;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 max-width: 100%;
+            }
+
+            .label-stock-code {
+                font-size: 7pt;
+                color: #000;
+                font-family: monospace;
+                white-space: nowrap;
+            }
+
+            .label-supplier {
+                margin-top: auto;
+                font-size: 6.5pt;
+                color: #000;
+                font-style: italic;
             }
         </style>
     </head>
@@ -342,6 +358,10 @@ function qc_labels_print($all_products, $print_ids) {
                         <?php if ($item['component']): ?>
                         <div class="label-component"><?= esc_html($item['component']) ?></div>
                         <?php endif; ?>
+                        <?php if ($item['stock_code']): ?>
+                        <div class="label-stock-code"><?= esc_html($item['stock_code']) ?></div>
+                        <?php endif; ?>
+                        <div class="label-supplier">Supplied by Quality Components in Australia</div>
                     </div>
                 </div>
             </div>
